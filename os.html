@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pixel OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="desktop" tabindex="0">
+<div id="icons">
+  <div class="icon" data-app="clock-app" title="Clock">
+    <img src="./icons/clock.png" alt="Clock icon">
+    <span>Clock</span>
+  </div>
+
+  <div class="icon" data-app="notepad" title="Notepad">
+    <img src="./icons/notepad.png" alt="Notepad icon">
+    <span>Notepad</span>
+  </div>
+
+  <div class="icon" data-app="paint" title="Paint">
+    <img src="./icons/paint.png" alt="Paint icon">
+    <span>Paint</span>
+  </div>
+
+  <div class="icon" data-app="settings" title="Settings">
+    <img src="./icons/settings.png" alt="Settings icon">
+    <span>Settings</span>
+  </div>
+
+  <div class="icon" data-app="terminal" title="Terminal">
+    <img src="./icons/terminal.png" alt="Terminal icon">
+    <span>Terminal</span>
+  </div>
+
+  <div class="icon" data-app="browser" title="Browser">
+    <img src="./icons/browser.png" alt="Browser icon">
+    <span>Browser</span>
+  </div>
+</div>
+
+
+    <div id="taskbar">
+      <button id="taskbar-start" class="start-button" aria-haspopup="true" aria-expanded="false" aria-controls="start-menu">
+        ☰ Pixel OS
+      </button>
+      <div id="task-buttons" aria-live="polite" role="toolbar"></div>
+      <div id="clock" aria-hidden="false"></div>
+    </div>
+
+    <div class="window" id="clock-app" data-app="clock-app" style="left:80px;top:80px;">
+      <div class="titlebar"><div class="title">Clock</div><div class="controls"><button class="min">—</button><button class="fs">⤢</button><button class="close">✕</button></div></div>
+      <div class="content"><h2 id="timer">25:00</h2><div class="pom-controls"><button id="startBtn">Start</button><button id="resetBtn">Reset</button><label>Minutes: <input id="pomMinutes" type="number" min="1" max="120" value="25"></label></div></div>
+    </div>
+
+    <div class="window" id="notepad" data-app="notepad" style="left:420px;top:80px;">
+      <div class="titlebar"><div class="title">Notepad</div><div class="controls"><button class="min">—</button><button class="fs">⤢</button><button class="close">✕</button></div></div>
+      <div class="content"><textarea id="noteArea" placeholder="Write your notes..." style="width:100%;height:300px;box-sizing:border-box"></textarea></div>
+    </div>
+
+    <div class="window" id="paint" data-app="paint" style="left:160px;top:320px;">
+      <div class="titlebar"><div class="title">Paint</div><div class="controls"><button class="min">—</button><button class="fs">⤢</button><button class="close">✕</button></div></div>
+      <div class="content"><div class="paint-wrapper"><canvas id="paintCanvas" width="640" height="360"></canvas></div><div class="paint-tools"><input type="color" id="colorPicker" value="#0b5fff"><label>Size: <input id="brushSize" type="range" min="1" max="32" value="4"></label><button id="clearCanvas">Clear</button></div></div>
+    </div>
+
+    <div class="window" id="settings" data-app="settings" style="left:520px;top:320px;">
+      <div class="titlebar"><div class="title">Settings</div><div class="controls"><button class="min">—</button><button class="fs">⤢</button><button class="close">✕</button></div></div>
+      <div class="content">
+        <h3>Wallpaper</h3>
+        <select id="wallpaperSelect"><option value="./wallpapers/wall1.jpg">Wallpaper 1</option><option value="./wallpapers/wall2.jpg">Wallpaper 2</option><option value="./wallpapers/wall3.jpg">Wallpaper 3</option></select>
+        <div style="margin-top:12px;"><button id="applyWallpaper">Apply</button><button id="resetWallpaper">Reset</button></div>
+        <hr style="margin:12px 0;border:none;border-top:2px solid rgba(0,0,0,0.06)">
+        <h3>Theme</h3>
+        <select id="themeSelect"><option value="blue">Blue</option><option value="red">Red</option><option value="pink">Pink</option></select>
+        <div style="margin-top:12px;"><button id="applyTheme">Apply Theme</button><button id="resetTheme">Reset Theme</button></div>
+      </div>
+    </div>
+
+    <div class="window" id="terminal" data-app="terminal" style="left:200px;top:120px;display:none;">
+      <div class="titlebar"><div class="title">Terminal</div><div class="controls"><button class="min">—</button><button class="fs">⤢</button><button class="close">✕</button></div></div>
+      <div class="content"><div class="terminal"><div class="term-output" aria-live="polite"></div><input class="term-input" placeholder="Type a command and press Enter (help for list)"></div></div>
+    </div>
+
+    <div class="window" id="browser" data-app="browser" style="left:240px;top:140px;display:none;">
+      <div class="titlebar"><div class="title">Browser</div><div class="controls"><button class="min">—</button><button class="fs">⤢</button><button class="close">✕</button></div></div>
+      <div class="content">
+        <div class="browser-toolbar"><button class="browser-back">◀</button><button class="browser-forward">▶</button><input class="browser-address" placeholder="https://example.com"><button class="browser-go">Go</button></div>
+        <iframe class="browser-frame" src="about:blank" sandbox="allow-same-origin allow-forms allow-scripts allow-popups"></iframe>
+      </div>
+    </div>
+
+  <nav id="start-menu" class="hidden" aria-label="Start menu" role="menu">
+    <ul>
+      <li class="submenu">Programs
+        <ul>
+          <li data-app="clock-app" role="menuitem">Clock</li>
+          <li data-app="notepad" role="menuitem">Notepad</li>
+          <li data-app="paint" role="menuitem">Paint</li>
+        </ul>
+      </li>
+      <li class="submenu">Accessories
+        <ul>
+          <li data-app="terminal" role="menuitem">Terminal</li>
+          <li data-app="browser" role="menuitem">Browser</li>
+        </ul>
+      </li>
+      <li data-app="settings" role="menuitem">Settings</li>
+      <li id="start-shutdown" role="menuitem">Shut Down</li>
+      <li id="start-logout" role="menuitem">Logout</li>
+    </ul>
+  </nav>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
+
