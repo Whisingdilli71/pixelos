@@ -295,28 +295,47 @@ if (noteArea) {
 const sessionFiles = new Map();
 function uid(prefix = '') { return prefix + Math.random().toString(36).slice(2, 9); }
 
-function saveNoteToDesktop(filename) {
-  const noteArea = document.getElementById('noteArea');
-  if (!noteArea) return alert('Notepad not found.');
-  const text = noteArea.value || '';
-  const id = uid('f_');
-  const name = (filename || `note-${new Date().toISOString().slice(11, 19).replace(/:/g, '')}`);
-  const file = { id, name: name + '.txt', type: 'text', data: text, createdAt: Date.now() };
-  sessionFiles.set(id, file);
-  createDesktopFileIcon(file);
+function createDesktopFileIcon(file) {
+  const iconsContainer = document.getElementById('icons');
+  if (!iconsContainer) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'file-icon';
+  wrapper.dataset.fileId = file.id;
+  wrapper.style.position = 'relative';
+
+  const thumb = document.createElement('img');
+  thumb.src = file.type === 'image' ? file.data : createTextIconDataURL('TXT');
+  thumb.alt = file.name;
+
+  const label = document.createElement('span');
+  label.textContent = file.name;
+
+  const del = document.createElement('div');
+  del.className = 'file-delete';
+  del.textContent = '✕';
+  del.title = 'Delete';
+  del.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (confirm(`Delete "${file.name}" from desktop?`)) {
+      sessionFiles.delete(file.id);
+      wrapper.remove();       
+    }
+  });
+
+  wrapper.addEventListener('dblclick', () => openFileFromDesktop(file.id));
+
+  wrapper.addEventListener('click', () => {
+    document.querySelectorAll('.file-icon').forEach(el => el.classList.remove('selected'));
+    wrapper.classList.add('selected');
+  });
+
+  wrapper.appendChild(thumb);
+  wrapper.appendChild(label);
+  wrapper.appendChild(del);
+  iconsContainer.appendChild(wrapper);
 }
 
-function saveCanvasToDesktop(filename) {
-  const canvas = document.getElementById('paintCanvas');
-  const ctx = canvas?.getContext('2d');
-  if (!canvas || !ctx) return alert('Canvas not found.');
-  const dataURL = canvas.toDataURL('image/png');
-  const id = uid('f_');
-  const name = (filename || `image-${new Date().toISOString().slice(11, 19).replace(/:/g, '')}`);
-  const file = { id, name: name + '.png', type: 'image', data: dataURL, createdAt: Date.now() };
-  sessionFiles.set(id, file);
-  createDesktopFileIcon(file);
-}
 
 function ensureSaveControls() {
   const notepadWin = document.getElementById('notepad');
@@ -358,6 +377,47 @@ function ensureSaveControls() {
   }
 }
 ensureSaveControls();
+
+let activeDesktopFileId = null;
+
+function saveNoteToDesktop(filename) {
+  const noteArea = document.getElementById('noteArea');
+  if (!noteArea) return alert('Notepad not found.');
+
+  if (activeDesktopFileId) {
+    alert('A file is already saved on the desktop. Please delete it before saving another.');
+    return;
+  }
+
+  const text = noteArea.value || '';
+  const id = uid('f_');
+  const name = (filename || `note-${new Date().toISOString().slice(11, 19).replace(/:/g, '')}`);
+  const file = { id, name: name + '.txt', type: 'text', data: text, createdAt: Date.now() };
+
+  sessionFiles.set(id, file);
+  activeDesktopFileId = id;
+  createDesktopFileIcon(file);
+}
+
+function saveCanvasToDesktop(filename) {
+  const canvas = document.getElementById('paintCanvas');
+  if (!canvas) return alert('Paint not found.');
+
+  if (activeDesktopFileId) {
+    alert('A file is already saved on the desktop. Please delete it before saving another.');
+    return;
+  }
+
+  const id = uid('f_');
+  const name = (filename || `drawing-${new Date().toISOString().slice(11, 19).replace(/:/g, '')}`);
+  const dataUrl = canvas.toDataURL('image/png');
+  const file = { id, name: name + '.png', type: 'image', data: dataUrl, createdAt: Date.now() };
+
+  sessionFiles.set(id, file);
+  activeDesktopFileId = id;
+  createDesktopFileIcon(file);
+}
+
 
 
 const wallpaperSelect = document.getElementById('wallpaperSelect');
@@ -528,7 +588,6 @@ function openFileFromDesktop(fileId) {
   }
 }
 
-
 const appIcons = Array.from(document.querySelectorAll('.icon'));
 appIcons.forEach(icon => {
   icon.addEventListener('dblclick', () => {
@@ -541,9 +600,12 @@ function createDesktopFileIcon(file) {
   const iconsContainer = document.getElementById('icons');
   if (!iconsContainer) return;
 
+  document.querySelectorAll('.file-icon').forEach(el => el.remove());
+
   const wrapper = document.createElement('div');
   wrapper.className = 'file-icon';
   wrapper.dataset.fileId = file.id;
+  wrapper.style.position = 'relative';
 
   const thumb = document.createElement('img');
   thumb.src = file.type === 'image' ? file.data : createTextIconDataURL('TXT');
@@ -553,22 +615,15 @@ function createDesktopFileIcon(file) {
   label.textContent = file.name;
 
   const del = document.createElement('div');
-  del.className = 'file-delete-dot';
-  del.textContent = '•'; 
-  Object.assign(del.style, {
-    position: 'absolute',
-    top: '2px',
-    right: '6px',
-    cursor: 'pointer',
-    color: 'red',
-    fontWeight: 'bold'
-  });
+  del.className = 'file-delete';
+  del.textContent = '✕';
   del.title = 'Delete';
   del.addEventListener('click', (e) => {
     e.stopPropagation();
     if (confirm(`Delete "${file.name}" from desktop?`)) {
       sessionFiles.delete(file.id);
       wrapper.remove();
+      activeDesktopFileId = null;
     }
   });
 
@@ -579,14 +634,13 @@ function createDesktopFileIcon(file) {
     wrapper.classList.add('selected');
   });
 
-  wrapper.style.position = 'relative';
   wrapper.appendChild(thumb);
   wrapper.appendChild(label);
   wrapper.appendChild(del);
   iconsContainer.appendChild(wrapper);
+
+  activeDesktopFileId = file.id;
 }
-
-
 
 (function browserApp() {
   const browserWin = document.getElementById('browser');
