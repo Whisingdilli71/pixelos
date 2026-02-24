@@ -47,7 +47,7 @@ body{
 }
 
 #icons{
-  position:absolute;
+  position:relative;
   top:20px;
   left:20px;
   display:grid;
@@ -62,6 +62,7 @@ body{
   color:var(--blue-900);
   text-shadow: 1px 1px rgba(255,255,255,0.6);
   user-select:none;
+  position:relative;
 }
 .icon img{
   width:64px;height:64px;image-rendering:pixelated;border:3px solid var(--shadow);background:#fff;
@@ -216,21 +217,21 @@ textarea{
 .file-icon span{display:block;font-size:10px;line-height:1.1;word-break:break-word}
 .file-icon.selected{outline:3px solid rgba(255,255,255,0.25);border-radius:6px}
 
-.file-delete{
-  position:relative;
-  top:-72px;
-  left:40px;
-  background:rgba(0,0,0,0.6);
-  color:#fff;
-  border-radius:50%;
-  width:18px;
-  height:18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:12px;
-  cursor:pointer;
-  border:2px solid #fff;
+.file-delete {
+  position: absolute; 
+  top: -6px;          
+  right: -6px;        
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  border: 2px solid #fff;
 }
 
 .window#terminal {
